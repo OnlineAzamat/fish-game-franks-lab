@@ -26,6 +26,11 @@ canvas.addEventListener('mouseup', function() {
 });
 
 // Player
+const playerLeft = new Image();
+playerLeft.src = 'fish_swim_left.png';
+const playerRight = new Image();
+playerRight.src = 'fish_swim_right.png';
+
 class Player {
   constructor() {
     this.x = canvas.width;
@@ -74,9 +79,14 @@ class Bubble {
     this.radius = 50;
     this.speed = Math.random() * 5 + 1;
     this.distance;
+    this.counted = false;
+    this.sound = Math.random() <= 0.5 ? 'sound1' : 'sound2';
   }
   update() {
     this.y -= this.speed;
+    const dx = this.x - player.x;
+    const dy = this.y - player.y;
+    this.distance = Math.sqrt(dx*dx + dy*dy);
   }
   draw() {
     ctx.fillStyle = 'blue';
@@ -87,6 +97,12 @@ class Bubble {
     ctx.stroke();
   }
 }
+
+const bubblePop1 = document.createElement('audio');
+bubblePop1.src = 'Plop.ogg';
+const bubblePop2 = document.createElement('audio');
+bubblePop2.src = 'bubbles-single2.wav';
+
 function handleBubbles() {
   if (gameFrame % 50 == 0) {
     bubblesArray.push(new Bubble());
@@ -99,8 +115,17 @@ function handleBubbles() {
     if (bubblesArray[i].y < 0 - bubblesArray[i].radius * 2) {
       bubblesArray.splice(i, 1);
     }
-    if (bubblesArray[i].distance < bubblesArray[i].radius + player.radius) {
-      console.log('collision');
+    if (bubblesArray[i].distance < bubblesArray[i].radius + player.radius) { // collision
+      if (!bubblesArray[i].counted) {
+        if (bubblesArray[i].sound == 'sound1') {
+          bubblePop1.play();
+        } else {
+          bubblePop2.play();
+        }
+        score++;
+        bubblesArray[i].counted = true;
+        bubblesArray.splice(i, 1);
+      }
     }
   }
 }
