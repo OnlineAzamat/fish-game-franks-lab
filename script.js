@@ -6,8 +6,9 @@ canvas.height = 500;
 
 let score = 0;
 let gameFrame = 0;
+ctx.font = '40px Georgia';
 let gameSpeed = 1;
-ctx.font = '50px Georgia';
+let gameOver = false;
 
 // Mouse Interactivity
 let canvasPosition = canvas.getBoundingClientRect();
@@ -65,12 +66,6 @@ class Player {
       ctx.lineTo(mouse.x, mouse.y);
       ctx.stroke();
     }
-    ctx.fillStyle = 'red';
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.closePath();
-    ctx.fillRect(this.x, this.y, this.radius, 10);
 
     ctx.save();
     ctx.translate(this.x, this.y);
@@ -130,9 +125,9 @@ function handleBubbles() {
     } else if (bubblesArray[i].distance < bubblesArray[i].radius + player.radius) { // collision
       if (!bubblesArray[i].counted) {
         if (bubblesArray[i].sound == 'sound1') {
-          // bubblePop1.play();
+          bubblePop1.play();
         } else {
-          // bubblePop2.play();
+          bubblePop2.play();
         }
         score++;
         bubblesArray[i].counted = true;
@@ -171,7 +166,7 @@ enemyImage.src = 'enemy1.png';
 class Enemy {
   constructor() {
     this.x = canvas.width + 200;
-    this.y = Math.random() * (canvas.height - 150) + 90;
+    this.y = Math.random() * (canvas.height - 150) + 120;
     this.radius = 60;
     this.speed = Math.random() * 2 + 2;
     this.frame = 0;
@@ -181,11 +176,7 @@ class Enemy {
     this.spriteHeight = 397;
   }
   draw() {
-    ctx.fillStyle = 'red';
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.drawImage(enemyImage, this.frameX * this.spriteWidth, this.frameX * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.x - 60, this.y - 70, this.spriteWidth / 3, this.spriteHeight / 3);
+    ctx.drawImage(enemyImage, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.x - 60, this.y - 70, this.spriteWidth / 3, this.spriteHeight / 3);
   }
   update() {
     this.x -= this.speed;
@@ -194,13 +185,44 @@ class Enemy {
       this.y = Math.random() * (canvas.height - 150) + 90;
       this.speed = Math.random() * 2 + 2;
     }
+    if (gameFrame % 5 == 0) {
+      this.frame++;
+      if (this.frame >= 12) this.frame = 0;
+      if (this.frame == 3 || this.frame == 7 || this.frame == 11){
+        this.frameX = 0;
+      } else {
+        this.frameX++;
+      }
+      if (this.frame < 3) this.frameY = 0;
+      else if (this.frame < 7) this.frameY = 1;
+      else if (this.frame < 11) this.frameY = 2;
+      else this.frameY = 0;
+    }
+    // collision with player
+    const dx = this.x - player.x;
+    const dy = this.y - player.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance < this.radius + player.radius) {
+      handleGameOver();
+    }
   }
 }
 const enemy1 = new Enemy();
 function handleEnemies() {
-  enemy1.update();
   enemy1.draw();
+  enemy1.update();
 }
+
+// Game Over
+function handleGameOver() {
+  ctx.fillStyle = 'white';
+  ctx.fillText('GAME OVER, you reached score ' + score, 110, 250);
+  gameOver = true;
+}
+
+// Game Over Sound
+const gameOverSound = document.createElement('audio');
+gameOverSound.src = "game_over_1.mp3";
 
 // Animation loop
 function animate() {
@@ -218,8 +240,8 @@ function animate() {
   ctx.fillText('Score: ' + score, 10, 50);
 
   gameFrame++;
-
-  requestAnimationFrame(animate);
+  if (!gameOver) requestAnimationFrame(animate);
+  else gameOverSound.play();
 }
 animate();
 
