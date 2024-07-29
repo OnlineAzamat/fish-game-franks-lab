@@ -29,9 +29,9 @@ canvas.addEventListener('mouseup', function() {
 
 // Player
 const playerLeft = new Image();
-playerLeft.src = 'fish_swim_left.png';
+playerLeft.src = 'assets/fish_swim_left.png';
 const playerRight = new Image();
-playerRight.src = 'fish_swim_right.png';
+playerRight.src = 'assets/fish_swim_right.png';
 
 class Player {
   constructor() {
@@ -42,6 +42,7 @@ class Player {
     this.frameX = 0;
     this.frameY = 0;
     this.frame = 0;
+    this.speed = Math.random() * 2 + 2;
     this.spriteWidth = 498;
     this.spriteHeight = 327;
   }
@@ -57,6 +58,28 @@ class Player {
     if (mouse.y != this.y) {
       this.y -= dy/30; // y boyinsha tezligi
     }
+
+    // Issue ---->
+    this.x -= this.speed;
+    if(this.x < 0 - this.radius * 2) {
+      this.x = canvas.width + 200;
+      this.y = Math.random() * (canvas.height - 150) + 90;
+      this.speed = Math.random() * 2 + 2;
+    }
+    if (gameFrame % 5 == 0) {
+      this.frame++;
+      if (this.frame >= 12) this.frame = 0;
+      if (this.frame == 3 || this.frame == 7 || this.frame == 11){
+        this.frameX = 0;
+      } else {
+        this.frameX++;
+      }
+      if (this.frame < 3) this.frameY = 0;
+      else if (this.frame < 7) this.frameY = 1;
+      else if (this.frame < 11) this.frameY = 2;
+      else this.frameY = 0;
+    }
+    // <------
   }
   draw() {
     if(mouse.click) {
@@ -84,7 +107,7 @@ const player = new Player();
 // Bubbles
 const bubblesArray = [];
 const bubbleImage = new Image();
-bubbleImage.src = 'bubble_pop_frame_01.png';
+bubbleImage.src = 'assets/bubble_pop_frame_01.png';
 
 class Bubble {
   constructor() {
@@ -108,9 +131,9 @@ class Bubble {
 }
 
 const bubblePop1 = document.createElement('audio');
-bubblePop1.src = 'Plop.ogg';
+bubblePop1.src = 'assets/Plop.ogg';
 const bubblePop2 = document.createElement('audio');
-bubblePop2.src = 'bubbles-single2.wav';
+bubblePop2.src = 'assets/bubbles-single2.wav';
 
 function handleBubbles() {
   if (gameFrame % 50 == 0) {
@@ -140,7 +163,7 @@ function handleBubbles() {
 
 // Repeating backgrounds
 const background = new Image();
-background.src = 'background1.png';
+background.src = 'assets/background1.png';
 
 const BG = {
   x1: 0,
@@ -161,7 +184,7 @@ function handleBackground() {
 
 // Enemies
 const enemyImage = new Image();
-enemyImage.src = 'enemy1.png';
+enemyImage.src = 'assets/enemy1.png';
 
 class Enemy {
   constructor() {
@@ -176,7 +199,17 @@ class Enemy {
     this.spriteHeight = 397;
   }
   draw() {
-    ctx.drawImage(enemyImage, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.x - 60, this.y - 70, this.spriteWidth / 3, this.spriteHeight / 3);
+    ctx.drawImage(
+      enemyImage, // src img
+      this.frameX * this.spriteWidth, // sx
+      this.frameY * this.spriteHeight, // sy
+      this.spriteWidth, // sw
+      this.spriteHeight, // sh
+      this.x - 60, // dx
+      this.y - 70, // dy
+      this.spriteWidth / 3, // dw
+      this.spriteHeight / 3 // dh
+    );
   }
   update() {
     this.x -= this.speed;
@@ -222,7 +255,7 @@ function handleGameOver() {
 
 // Game Over Sound
 const gameOverSound = document.createElement('audio');
-gameOverSound.src = "game_over_1.mp3";
+gameOverSound.src = "assets/game_over_1.mp3";
 
 // Animation loop
 function animate() {
