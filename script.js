@@ -1,8 +1,8 @@
 // Canvas setup
 const canvas = document.getElementById('canvas1');
 const ctx = canvas.getContext('2d');
-canvas.width = 800;
-canvas.height = 500;
+canvas.width = 1600;
+canvas.height = 800;
 
 let score = 0;
 let gameFrame = 0;
@@ -42,7 +42,6 @@ class Player {
     this.frameX = 0;
     this.frameY = 0;
     this.frame = 0;
-    this.speed = Math.random() * 2 + 2;
     this.spriteWidth = 498;
     this.spriteHeight = 327;
   }
@@ -60,12 +59,6 @@ class Player {
     }
 
     // Issue ---->
-    this.x -= this.speed;
-    if(this.x < 0 - this.radius * 2) {
-      this.x = canvas.width + 200;
-      this.y = Math.random() * (canvas.height - 150) + 90;
-      this.speed = Math.random() * 2 + 2;
-    }
     if (gameFrame % 5 == 0) {
       this.frame++;
       if (this.frame >= 12) this.frame = 0;
@@ -95,9 +88,29 @@ class Player {
     ctx.rotate(this.angle);
 
     if (this.x >= mouse.x) {
-      ctx.drawImage(playerLeft, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, 0 - 60, 0 - 45, this.spriteWidth/4, this.spriteHeight/4);
+      ctx.drawImage(
+        playerLeft, // src img
+        this.frameX * this.spriteWidth, // sx
+        this.frameY * this.spriteHeight, // sy
+        this.spriteWidth, // sw
+        this.spriteHeight, // sy
+        0 - 60, // dx
+        0 - 45, // dy
+        this.spriteWidth/4, // dw
+        this.spriteHeight/4 // dy
+      );
     } else {
-      ctx.drawImage(playerRight, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, 0 - 60, 0 - 45, this.spriteWidth/4, this.spriteHeight/4);
+      ctx.drawImage(
+        playerRight, 
+        this.frameX * this.spriteWidth, 
+        this.frameY * this.spriteHeight, 
+        this.spriteWidth, 
+        this.spriteHeight, 
+        0 - 60, 
+        0 - 45, 
+        this.spriteWidth/4, 
+        this.spriteHeight/4
+      );
     }
     ctx.restore();
   }
