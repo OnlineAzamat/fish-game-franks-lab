@@ -1,8 +1,15 @@
 // Canvas setup
 const canvas = document.getElementById('canvas1');
 const ctx = canvas.getContext('2d');
-canvas.width = 1600;
-canvas.height = 800;
+
+
+if (window.screen.width <= 720) {
+  canvas.width = window.screen.width;
+  canvas.height = window.screen.height;
+} else {
+  canvas.width = 800;
+  canvas.height = 500;
+}
 
 let score = 0;
 let gameFrame = 0;
