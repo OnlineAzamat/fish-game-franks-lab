@@ -127,13 +127,18 @@ const player = new Player();
 // Bubbles
 const bubblesArray = [];
 const bubbleImage = new Image();
-bubbleImage.src = 'assets/bubble_pop_frame_01.png';
+bubbleImage.src = 'assets/bubble_pop_under_water_spritesheet.png';
 
 class Bubble {
   constructor() {
     this.x = Math.random() * canvas.width;
     this.y = canvas.height + 100;
     this.radius = 50;
+    this.frameX = 0;
+    this.frameY = 0;
+    this.frame = 0;
+    this.spriteWidth = 393;
+    this.spriteHeight = 511;
     this.speed = Math.random() * 5 + 1;
     this.distance;
     this.counted = false;
@@ -144,10 +149,46 @@ class Bubble {
     const dx = this.x - player.x;
     const dy = this.y - player.y;
     this.distance = Math.sqrt(dx*dx + dy*dy);
+
+    // if (gameFrame % 5 == 0) {
+    //   this.frame++;
+    //   if (this.frame >= 8) this.frame = 0;
+    //   if (this.frame == 3 || this.frame == 7) {
+    //     this.frameX = 0;
+    //   } else {
+    //     this.frameX++;
+    //   }
+    //   if (this.frame < 3) this.frameY = 0;
+    //   else if (this.frame < 7) this.frameY = 1;
+    //   else this.frameY = 0;
+    // }
   }
   draw() {
-    ctx.drawImage(bubbleImage, this.x - 65, this.y - 65, this.radius * 2.6, this.radius * 2.6)
+    ctx.drawImage(
+      bubbleImage, 
+      this.frameX * this.spriteWidth,
+      this.frameY * this.spriteHeight,
+      this.spriteWidth,
+      this.spriteHeight,
+      this.x - 65, 
+      this.y - 65, 
+      this.radius * 2.6, 
+      this.radius * 2.6
+    );
   }
+  // spriteBubble() {
+  //   if (gameFrame % 5 == 0) {
+  //     this.frame++;
+  //     if (this.frame >= 8) this.frame = 0;
+  //     if (this.frame == 3 || this.frame == 7) {
+  //       this.frameX = 0;
+  //     } else {
+  //       this.frameX++;
+  //     }
+  //     if (this.frame < 3) this.frameY = 0;
+  //     else if (this.frame < 7) this.frameY = 1;
+  //   }
+  // }
 }
 
 const bubblePop1 = document.createElement('audio');
@@ -162,6 +203,7 @@ function handleBubbles() {
   for (let i = 0; i < bubblesArray.length; i++) {
     bubblesArray[i].update();
     bubblesArray[i].draw();
+    // bubblesArray[i].spriteBubble();
     if (bubblesArray[i].y < 0 - bubblesArray[i].radius * 2) {
       bubblesArray.splice(i, 1);
       i--;
