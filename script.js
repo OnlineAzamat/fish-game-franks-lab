@@ -127,7 +127,7 @@ const player = new Player();
 // Bubbles
 const bubblesArray = [];
 const bubbleImage = new Image();
-bubbleImage.src = 'assets/bubble_pop_under_water_spritesheet.png';
+bubbleImage.src = 'assets/bubble_pop_frame_01.png';
 
 class Bubble {
   constructor() {
@@ -149,46 +149,16 @@ class Bubble {
     const dx = this.x - player.x;
     const dy = this.y - player.y;
     this.distance = Math.sqrt(dx*dx + dy*dy);
-
-    // if (gameFrame % 5 == 0) {
-    //   this.frame++;
-    //   if (this.frame >= 8) this.frame = 0;
-    //   if (this.frame == 3 || this.frame == 7) {
-    //     this.frameX = 0;
-    //   } else {
-    //     this.frameX++;
-    //   }
-    //   if (this.frame < 3) this.frameY = 0;
-    //   else if (this.frame < 7) this.frameY = 1;
-    //   else this.frameY = 0;
-    // }
   }
   draw() {
     ctx.drawImage(
-      bubbleImage, 
-      this.frameX * this.spriteWidth,
-      this.frameY * this.spriteHeight,
-      this.spriteWidth,
-      this.spriteHeight,
+      bubbleImage,
       this.x - 65, 
       this.y - 65, 
       this.radius * 2.6, 
       this.radius * 2.6
     );
   }
-  // spriteBubble() {
-  //   if (gameFrame % 5 == 0) {
-  //     this.frame++;
-  //     if (this.frame >= 8) this.frame = 0;
-  //     if (this.frame == 3 || this.frame == 7) {
-  //       this.frameX = 0;
-  //     } else {
-  //       this.frameX++;
-  //     }
-  //     if (this.frame < 3) this.frameY = 0;
-  //     else if (this.frame < 7) this.frameY = 1;
-  //   }
-  // }
 }
 
 const bubblePop1 = document.createElement('audio');
@@ -203,7 +173,6 @@ function handleBubbles() {
   for (let i = 0; i < bubblesArray.length; i++) {
     bubblesArray[i].update();
     bubblesArray[i].draw();
-    // bubblesArray[i].spriteBubble();
     if (bubblesArray[i].y < 0 - bubblesArray[i].radius * 2) {
       bubblesArray.splice(i, 1);
       i--;
@@ -215,7 +184,6 @@ function handleBubbles() {
           bubblePop2.play();
         }
         score++;
-        bubblesArray[i].counted = true;
         bubblesArray.splice(i, 1);
         i--;
       }
@@ -245,6 +213,16 @@ function handleBackground() {
 }
 
 // Enemies
+const enemies = [
+  {
+    src: "assets/rest_to_left_sheet.png",
+    frameX: 5,
+    frameY: 0,
+    enemyWidth: 256,
+    enemyHeight: 256,
+  }
+];
+
 const enemyImage = new Image();
 enemyImage.src = 'assets/enemy1.png';
 
@@ -252,7 +230,7 @@ class Enemy {
   constructor() {
     this.x = canvas.width + 200;
     this.y = Math.random() * (canvas.height - 150) + 120;
-    this.radius = 60;
+    this.radius = 30;
     this.speed = Math.random() * 2 + 2;
     this.frame = 0;
     this.frameX = 0;
@@ -267,10 +245,10 @@ class Enemy {
       this.frameY * this.spriteHeight, // sy
       this.spriteWidth, // sw
       this.spriteHeight, // sh
-      this.x - 60, // dx
-      this.y - 70, // dy
-      this.spriteWidth / 3, // dw
-      this.spriteHeight / 3 // dh
+      this.x - 30, // dx
+      this.y - 35, // dy
+      this.spriteWidth / 6, // dw
+      this.spriteHeight / 6 // dh
     );
   }
   update() {
