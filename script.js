@@ -1,7 +1,7 @@
 // Canvas setup
 const canvas = document.getElementById('canvas1');
 const ctx = canvas.getContext('2d');
-
+window.localStorage.setItem('maxScore', 0);
 
 if (window.screen.width <= 720) {
   canvas.width = window.screen.width;
@@ -186,6 +186,9 @@ function handleBubbles() {
         score++;
         bubblesArray.splice(i, 1);
         i--;
+        if (window.localStorage.getItem('maxScore') < score) {
+          window.localStorage.setItem('maxScore', score);
+        }
       }
     }
   }
@@ -226,7 +229,7 @@ const enemies = [
 const enemyImage = new Image();
 enemyImage.src = 'assets/enemy1.png';
 
-class Enemy {
+class Enemy1 {
   constructor() {
     this.x = canvas.width + 200;
     this.y = Math.random() * (canvas.height - 150) + 120;
@@ -280,11 +283,71 @@ class Enemy {
     }
   }
 }
-const enemy1 = new Enemy();
+
+class Enemy2 {
+  constructor() {
+    this.x = canvas.width + 200;
+    this.y = Math.random() * (canvas.height - 150) + 120;
+    this.radius = 30;
+    this.speed = Math.random() * 2 + 2;
+    this.img = new Image();
+    this.img.src = 'assets/rest_to_left_sheet.png';
+    this.frame = 0;
+    this.frameX = 0;
+    // this.frameY = 0;
+    this.spriteWidth = 256;
+    this.spriteHeight = 256;
+  }
+  draw() {
+    ctx.drawImage(
+      this.img, // src img
+      this.frameX * this.spriteWidth, // sx
+      0, // sy
+      this.spriteWidth, // sw
+      this.spriteHeight, // sh
+      this.x - 30, // dx (adjusting to center the image horizontally)
+      this.y - 35, // dy (adjusting to center the image vertically)
+      this.spriteWidth / 3, // dw
+      this.spriteHeight / 3 // dh
+    );
+  }
+  update() {
+    this.x -= this.speed;
+    if(this.x < 0 - this.radius * 2) {
+      this.x = canvas.width + 200;
+      this.y = Math.random() * (canvas.height - 150) + 90;
+      this.speed = Math.random() * 2 + 2;
+    }
+    if (gameFrame % 5 == 0) {
+      this.frame++;
+      if (this.frame >= 6) this.frame = 0;
+      if (this.frame == 5){
+        this.frameX = 0;
+      } else {
+        this.frameX++;
+      }
+    }
+    // collision with player
+    const dx = this.x - player.x;
+    const dy = this.y - player.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance < this.radius + player.radius) {
+      handleGameOver();
+    }
+  }
+}
+
+const enemy1 = new Enemy1();
+const enemy2 = new Enemy2();
+
 function handleEnemies() {
   enemy1.draw();
   enemy1.update();
+
+  enemy2.draw();
+  enemy2.update();
 }
+
 
 // Game Over
 function handleGameOver() {
@@ -310,7 +373,11 @@ function animate() {
   handleEnemies();
 
   ctx.fillStyle = 'black';
-  ctx.fillText('Score: ' + score, 10, 50);
+  ctx.font = '20px "Press Start 2P"';
+  ctx.fillText('Score:', canvas.width - 150, 40);
+  ctx.font = '40px Honk';
+  ctx.fillText(score, canvas.width - 150, 70);
+  // ctx.fillText('Record score: ' + window.localStorage.getItem('maxScore'), 10, 100);
 
   gameFrame++;
   if (!gameOver) requestAnimationFrame(animate);
