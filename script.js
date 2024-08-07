@@ -16,6 +16,7 @@ let gameFrame = 0;
 ctx.font = '40px Georgia';
 let gameSpeed = 1;
 let gameOver = false;
+let oxygen = 200;
 
 // Mouse Interactivity
 let canvasPosition = canvas.getBoundingClientRect();
@@ -44,7 +45,7 @@ class Player {
   constructor() {
     this.x = canvas.width;
     this.y = canvas.height/2;
-    this.radius = 50;
+    this.radius = 25;
     this.angle = 0;
     this.frameX = 0;
     this.frameY = 0;
@@ -101,10 +102,10 @@ class Player {
         this.frameY * this.spriteHeight, // sy
         this.spriteWidth, // sw
         this.spriteHeight, // sy
-        0 - 60, // dx
-        0 - 45, // dy
-        this.spriteWidth/4, // dw
-        this.spriteHeight/4 // dy
+        0 - 30, // dx
+        0 - 22.5, // dy
+        this.spriteWidth/8, // dw
+        this.spriteHeight/8 // dy
       );
     } else {
       ctx.drawImage(
@@ -113,10 +114,10 @@ class Player {
         this.frameY * this.spriteHeight, 
         this.spriteWidth, 
         this.spriteHeight, 
-        0 - 60, 
-        0 - 45, 
-        this.spriteWidth/4, 
-        this.spriteHeight/4
+        0 - 30, 
+        0 - 22.5, 
+        this.spriteWidth/8, 
+        this.spriteHeight/8
       );
     }
     ctx.restore();
@@ -133,7 +134,7 @@ class Bubble {
   constructor() {
     this.x = Math.random() * canvas.width;
     this.y = canvas.height + 100;
-    this.radius = 50;
+    this.radius = 25;
     this.frameX = 0;
     this.frameY = 0;
     this.frame = 0;
@@ -153,8 +154,8 @@ class Bubble {
   draw() {
     ctx.drawImage(
       bubbleImage,
-      this.x - 65, 
-      this.y - 65, 
+      this.x - 32.5, 
+      this.y - 32.5, 
       this.radius * 2.6, 
       this.radius * 2.6
     );
@@ -184,6 +185,7 @@ function handleBubbles() {
           bubblePop2.play();
         }
         score++;
+        oxygen += 5;
         bubblesArray.splice(i, 1);
         i--;
         if (window.localStorage.getItem('maxScore') < score) {
@@ -213,6 +215,13 @@ function handleBackground() {
   if (BG.x2 < -BG.width) BG.x2 = BG.width;
   ctx.drawImage(background, BG.x1, BG.y, BG.width, BG.height);
   ctx.drawImage(background, BG.x2, BG.y, BG.width, BG.height);
+}
+
+// Oxygen Bar
+
+function oxygenBar() {
+  ctx.fillStyle = "rgba(0,0,255,0.5)";
+  ctx.fillRect(10, 10, oxygen, 15);
 }
 
 // Enemies
@@ -351,8 +360,6 @@ function handleEnemies() {
 
 // Game Over
 function handleGameOver() {
-  ctx.fillStyle = 'white';
-  ctx.fillText('GAME OVER, you reached score ' + score, 110, 250);
   gameOver = true;
 }
 
@@ -372,6 +379,9 @@ function animate() {
 
   handleEnemies();
 
+  oxygenBar();
+  oxygen -= 0.2;
+
   ctx.fillStyle = 'black';
   ctx.font = '20px "Press Start 2P"';
   ctx.fillText('Score:', canvas.width - 150, 40);
@@ -380,8 +390,16 @@ function animate() {
   // ctx.fillText('Record score: ' + window.localStorage.getItem('maxScore'), 10, 100);
 
   gameFrame++;
-  if (!gameOver) requestAnimationFrame(animate);
-  else gameOverSound.play();
+  if (!gameOver && oxygen >= 0) requestAnimationFrame(animate);
+  else if (oxygen <= 0) {
+    ctx.fillStyle = 'white';
+    ctx.fillText('Left Oxygen', 110, 250);
+    gameOverSound.play();
+  } else {
+    ctx.fillStyle = 'white';
+    ctx.fillText('GAME OVER', 110, 250);
+    gameOverSound.play();
+  };
 }
 animate();
 
